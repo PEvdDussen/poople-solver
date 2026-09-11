@@ -1,0 +1,23 @@
+[project]
+name = "poople-solver"
+version = "1.0.0"
+description = "Poople word ladder solver"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "typer>=0.27.2",
+    "rich",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+poople = ["poople_words.json"]
+
+[project.scripts]
+poople = "poople.__init__:app"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
