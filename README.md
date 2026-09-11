@@ -81,4 +81,4 @@ Usage: poople [OPTIONS] {start_word}
 Contributions are welcome!
 
 ## License
-MIT
+Apache 2.0
