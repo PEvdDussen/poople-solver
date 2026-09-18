@@ -8,6 +8,7 @@ from typing import Annotated
 import typer
 from rich.console import Console
 from rich.panel import Panel
+from rich.text import Text
 from rich.tree import Tree
 
 app = typer.Typer(
@@ -89,20 +90,18 @@ def find_shortest_paths(
     return shortest_paths
 
 
-from rich.text import Text
-
 def build_tree(paths: list[list[str]]) -> Tree:
     """Builds a Rich Tree from a list of shortest paths with level-based coloring."""
     palette = ["cyan", "yellow", "green", "blue", "magenta"]
     root_word = paths[0][0]
     root_color = palette[0 % len(palette)]
     tree = Tree(Text(root_word, style=root_color))
-    
+
     for path in paths:
         current_node = tree
         for i, word in enumerate(path[1:], 1):
             color = palette[i % len(palette)]
-            
+
             # Check if this word is already a child of the current node
             found = False
             for child in current_node.children:
@@ -112,14 +111,14 @@ def build_tree(paths: list[list[str]]) -> Tree:
                         current_node = child
                         found = True
                         break
-                elif str(child.label) == word: # Fallback
+                elif str(child.label) == word:  # Fallback
                     current_node = child
                     found = True
                     break
-            
+
             if not found:
                 current_node = current_node.add(Text(word, style=color))
-                
+
     return tree
 
 
@@ -163,7 +162,7 @@ def main(
     """Finds the shortest word ladder path from START_WORD to TARGET_WORD."""
     start = start_word.upper()
     target = target_word.upper()
-    
+
     # If graph is requested, find_all must be True
     if graph:
         find_all = True
@@ -189,7 +188,7 @@ def main(
     if paths:
         steps = len(paths[0]) - 1
         title_text = f"[bold green]Found {len(paths)} Shortest Path(s) ({steps} steps)[/bold green]"
-        
+
         if graph:
             console.print(title_text)
             console.print(build_tree(paths))
