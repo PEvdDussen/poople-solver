@@ -8,6 +8,7 @@ from typing import Annotated
 import typer
 from rich.console import Console
 from rich.panel import Panel
+from rich.tree import Tree
 
 app = typer.Typer(
     name="Poople Solver",
@@ -88,6 +89,40 @@ def find_shortest_paths(
     return shortest_paths
 
 
+from rich.text import Text
+
+def build_tree(paths: list[list[str]]) -> Tree:
+    """Builds a Rich Tree from a list of shortest paths with level-based coloring."""
+    palette = ["cyan", "yellow", "green", "blue", "magenta"]
+    root_word = paths[0][0]
+    root_color = palette[0 % len(palette)]
+    tree = Tree(Text(root_word, style=root_color))
+    
+    for path in paths:
+        current_node = tree
+        for i, word in enumerate(path[1:], 1):
+            color = palette[i % len(palette)]
+            
+            # Check if this word is already a child of the current node
+            found = False
+            for child in current_node.children:
+                # Compare the plain text of the node label
+                if isinstance(child.label, Text):
+                    if child.label.plain == word:
+                        current_node = child
+                        found = True
+                        break
+                elif str(child.label) == word: # Fallback
+                    current_node = child
+                    found = True
+                    break
+            
+            if not found:
+                current_node = current_node.add(Text(word, style=color))
+                
+    return tree
+
+
 # @app.callback(invoke_without_command=True)
 @app.command()
 def main(
@@ -116,10 +151,22 @@ def main(
             help="Print all shortest paths equivalent in length instead of just the first.",
         ),
     ] = False,
+    graph: Annotated[
+        bool,
+        typer.Option(
+            "--graph",
+            "-g",
+            help="Output shortest paths as a tree structure.",
+        ),
+    ] = False,
 ):
     """Finds the shortest word ladder path from START_WORD to TARGET_WORD."""
     start = start_word.upper()
     target = target_word.upper()
+    
+    # If graph is requested, find_all must be True
+    if graph:
+        find_all = True
 
     console.print(f"[bold blue]Loading dictionary from:[/bold blue] {file_path}")
     try:
@@ -142,22 +189,26 @@ def main(
     if paths:
         steps = len(paths[0]) - 1
         title_text = f"[bold green]Found {len(paths)} Shortest Path(s) ({steps} steps)[/bold green]"
+        
+        if graph:
+            console.print(title_text)
+            console.print(build_tree(paths))
+        else:
+            formatted_paths = []
+            for path in paths:
+                formatted_paths.append(
+                    " [bold green]->[/bold green] ".join(
+                        [f"[cyan]{word}[/cyan]" for word in path]
+                    )
+                )
 
-        formatted_paths = []
-        for path in paths:
-            formatted_paths.append(
-                " [bold green]->[/bold green] ".join(
-                    [f"[cyan]{word}[/cyan]" for word in path]
+            console.print(
+                Panel(
+                    "\n".join(formatted_paths),
+                    title=title_text,
+                    expand=False,
                 )
             )
-
-        console.print(
-            Panel(
-                "\n".join(formatted_paths),
-                title=title_text,
-                expand=False,
-            )
-        )
     else:
         console.print(
             f"[bold red]No path found[/bold red] between '{start}' and '{target}'."
