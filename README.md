@@ -10,69 +10,74 @@ Poople finds the shortest path between a starting word and a target word by chan
 
 ## Features
 - BFS pathfinding algorithm.
-- Configurable dictionary (use `-f` for different word lengths).
+- Word validation utility.
+- Statistics generation.
 - Intuitive CLI.
 
 ## Installation
 
 This project is built for use with [uv](https://github.com/astral-sh/uv).
 
+### Cloning the repo
+
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/PEvdDussen/poople-solver.git
-   cd poople-solver
-   ```
+```bash
+git clone https://github.com/PEvdDussen/poople-solver.git
+cd poople-solver
+```
 
 2. Install the tool using `uv`:
-   ```bash
-   uv tool install .
-   ```
+```bash
+uv tool install . --force
+```
+
+### Directly from GitHub
+
+```bash
+uv tool install https://github.com/PEvdDussen/poople-solver.git@v1.1.3
+```
 
 ## Usage
 
-### Basic Example
+### Finding paths
 Find the shortest path from "PEEP" to "POOP":
 ```bash
-poople PEEP
+poople find PEEP
 ```
 
-**Output:**
-```text
-Loading dictionary from: .\src\poople\poople_words.json
-Searching path: PEEP -> POOP...
-╭─ Found 1 Shortest Path(s) (3 steps) ─╮
-│ PEEP -> PREP -> PROP -> POOP         │
-╰──────────────────────────────────────╯
+### Validating words
+Check if a word is in the current dictionary:
+```bash
+poople valid-word PEEP
+```
+
+### Generating statistics
+Generate statistics for all words relative to a target:
+```bash
+poople complete-statistics --target POOP
 ```
 
 ### Advanced Usage
 Use a custom dictionary JSON file to support words of different lengths:
 ```bash
-poople START --target HELLO --file path/to/five_letter_words.json
+poople find START --target HELLO --file path/to/five_letter_words.json
 ```
 
 ### CLI Options
-An explanation of all the functionality of the tool can be found by running
+A full list of commands and options can be found by running:
 ```bash
 poople --help
 ```
 
-**Output**
-```text
-Usage: poople [OPTIONS] {start_word}                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                               
- Finds the shortest word ladder path from START_WORD to TARGET_WORD.                                                                                                                                                                                           
-                                                                                                                                                                                                                                                               
-╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ *    start_word      <str>  The starting word for the ladder. [required]                                     │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --target  -t      <str>   The destination word (defaults to POOP). [default: POOP]                           │
-│ --file    -f      <path>  Path to the JSON word list file. [default: .\src\poople\poople_words.json]         │
-│ --all     -a              Print all shortest paths equivalent in length instead of just the first.           │
-│ --help                    Show this message and exit.                                                        │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-```
+### Command Shorthand
+Several commands have hidden, shorthand versions for quicker typing:
+
+| Command | Shorthand | Description |
+| :--- | :--- | :--- |
+| `find` | `fd` | Finds shortest paths. |
+| `complete-statistics` | `cs` | Gathers and exports statistics. |
+| `valid-word` | `vw` | Validates word existence. |
+
 
 ## Project Overview
 - `src/`: Core logic and dictionary files.
