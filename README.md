@@ -34,7 +34,7 @@ uv tool install . --force
 ### Directly from GitHub
 
 ```bash
-uv tool install https://github.com/PEvdDussen/poople-solver.git@v1.1.3
+uv tool install git+https://github.com/PEvdDussen/poople-solver.git@v1.1.3
 ```
 
 ## Usage
